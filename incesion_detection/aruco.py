@@ -21,7 +21,7 @@ def detect_aruco_marker(frame, aruco_dict_type=cv2.aruco.DICT_4X4_50):
     """
     # Load the ArUco dictionary
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
-    aruco_params = cv2.aruco.DetectorParameters()
+    aruco_params = cv2.aruco.DetectorParameters_create()
 
     # Convert to grayscale for better detection
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
