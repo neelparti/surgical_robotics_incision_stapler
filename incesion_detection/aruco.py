@@ -62,7 +62,7 @@ picam2.start()
 
 while True:
     # Capture a frame from the Pi camera
-    frame = picam2.capture_array()
+    frame = picam2.capture_array("main")
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert RGB to BGR
 
     # Detect ArUco markers
