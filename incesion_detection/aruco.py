@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from picamera2 import Picamera2
 
-REAL_WIDTH = 2.0        # cm
+REAL_WIDTH = 20         # mm
 FOCAL_LENGTH = 2957     # pixels
 
 def detect_aruco_marker(frame, aruco_dict_type=cv2.aruco.DICT_4X4_50):
