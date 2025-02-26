@@ -1,86 +1,76 @@
-import cv2
 import numpy as np
+import cv2
 import glob
 
-# -----------------------------------------------------------
-# Parameters you need to adjust for your setup:
-# -----------------------------------------------------------
-CHECKERBOARD = (9, 6)  # (columns of internal corners, rows of internal corners)
-SQUARE_SIZE = 0.025    # real-world size of a checkerboard square (in meters, or any unit you prefer)
+def main():
+    # Set the dimensions of the chessboard pattern you are using.
+    # For a 9x6 board, you'll have 9 corners in one dimension and 6 in the other.
+    # Adjust these to match your actual calibration board.
+    chessboard_size = (9, 6)
 
-# Path to calibration images
-images_path = "calib_images/*.jpg"
+    # Criteria for refining corner detection
+    # We stop either after max iterations or when the corner refinement has moved
+    # less than 0.001 of a pixel.
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-# -----------------------------------------------------------
-# Prepare object points (3D points in real-world space)
-# -----------------------------------------------------------
-# For a 9x6 checkerboard, we have 54 corners.
-# We'll assume the top-left corner is (0,0,0) in 3D, next corner along x, etc.
-objp = np.zeros((CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
-objp[:, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
-objp = objp * SQUARE_SIZE  # Optionally multiply by the real square size (e.g., 25 mm => 0.025 m)
+    # Prepare the 3D object points for each corner in the chessboard.
+    # (0,0,0), (1,0,0), (2,0,0) ... (8,5,0) for a 9x6 board.
+    objp = np.zeros((chessboard_size[0]*chessboard_size[1], 3), np.float32)
+    objp[:, :2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1, 2)
 
-# Arrays to store object points and image points for all images
-objpoints = []  # 3D points in real-world space
-imgpoints = []  # 2D points in the image plane
+    # Arrays to store 3D points (objpoints) and 2D points in image plane (imgpoints).
+    objpoints = []  # 3D world points
+    imgpoints = []  # 2D image points
 
-# -----------------------------------------------------------
-# Load images and find chessboard corners
-# -----------------------------------------------------------
-image_files = glob.glob(images_path)
-if not image_files:
-    raise ValueError("No images found in the specified path. Check the path and file extension.")
+    # Load all images that match the pattern (adjust the path and file extension as needed).
+    images = glob.glob('*.jpg')  # e.g., 'calibration_*.jpg' if your files are named that way.
 
-for filename in image_files:
-    img = cv2.imread(filename)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Iterate over each calibration image
+    for fname in images:
+        img = cv2.imread(fname)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Attempt to find the corners on the chessboard
-    ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, None)
+        # Find the chessboard corners
+        ret, corners = cv2.findChessboardCorners(gray, chessboard_size, None)
 
-    if ret:
-        # Refine corner positions to subpixel accuracy
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-        corners_refined = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        if ret:
+            # Refine corner positions
+            corners_subpix = cv2.cornerSubPix(
+                gray, corners, (11, 11), (-1, -1), criteria
+            )
 
-        objpoints.append(objp)
-        imgpoints.append(corners_refined)
+            # Add points to our arrays
+            objpoints.append(objp)
+            imgpoints.append(corners_subpix)
 
-        # Optionally draw corners for visualization
-        cv2.drawChessboardCorners(img, CHECKERBOARD, corners_refined, ret)
-        cv2.imshow('Checkerboard', img)
-        cv2.waitKey(500)  # pause 500 ms to see each detection
-    else:
-        print(f"Checkerboard not detected in {filename}")
+            # Draw and display the corners for checking
+            cv2.drawChessboardCorners(img, chessboard_size, corners_subpix, ret)
+            cv2.imshow('Chessboard corners', img)
+            cv2.waitKey(500)
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
-# -----------------------------------------------------------
-# Calibrate the camera
-# -----------------------------------------------------------
-# Returns the camera matrix, distortion coefficients, rotation and translation vectors
-ret, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
-    objpoints, imgpoints, gray.shape[::-1], None, None
-)
-
-if ret:
-    print("Camera calibrated successfully!")
-    print("\nCamera matrix:\n", camera_matrix)
-    print("\nDistortion coefficients:\n", dist_coeffs.ravel())
-else:
-    print("Calibration failed. Not enough valid checkerboard detections.")
-
-# -----------------------------------------------------------
-# (Optional) Compute the reprojection error for a sanity check
-# -----------------------------------------------------------
-total_error = 0
-for i in range(len(objpoints)):
-    # Project the 3D points to 2D using the found parameters
-    imgpoints2, _ = cv2.projectPoints(
-        objpoints[i], rvecs[i], tvecs[i], camera_matrix, dist_coeffs
+    # Calibrate the camera using the collected points
+    # ret is the RMS (root mean square) re-projection error.
+    # mtx is the camera matrix,
+    # dist is the distortion coefficients,
+    # rvecs and tvecs are arrays of rotation and translation vectors for each image.
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
+        objpoints, imgpoints, gray.shape[::-1], None, None
     )
-    error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
-    total_error += error
 
-mean_error = total_error / len(objpoints)
-print(f"\nMean reprojection error: {mean_error:.4f}")
+    print(f"Calibration successful.\nRMS re-projection error: {ret}")
+    print("Camera matrix:\n", mtx)
+    print("Distortion coefficients:\n", dist)
+
+    # Save the calibration result to a .npz file
+    np.savez('camera_calib.npz', 
+             mtx=mtx, 
+             dist=dist, 
+             rvecs=rvecs, 
+             tvecs=tvecs)
+
+    print("Calibration parameters saved to camera_calib.npz")
+
+if __name__ == "__main__":
+    main()
