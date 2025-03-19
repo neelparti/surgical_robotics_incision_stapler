@@ -47,7 +47,11 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
                 depth = calculate_depth(pixel_width, REAL_WIDTH, FOCAL_LENGTH)
                 depth = depth / 2
                 if depth:
-                    print(f"Marker {marker_id} detected - Depth: {depth:.2f} cm")
+                    # print(f"Marker {marker_id} detected - Depth: {depth:.2f} cm")
+                    cap.release()
+                    cv2.destroyAllWindows()
+
+                    return depth, frame
 
         cv2.imshow("ArUco Detection", frame_with_markers)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -55,13 +59,16 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
 
     cap.release()
     cv2.destroyAllWindows()
-    return depth
+    
 
 def main():
     FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
     WEBCAM_INDEX = 0 
 
-    get_range(FOCAL_LENGTH, WEBCAM_INDEX)
+    depth, frame = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
+    cv2.imshow("Aruco tag", frame)
+    print("Aruco tag depth: " + str(depth))
+    cv2.waitKey(0)
 
 if __name__ == "__main__":
     main()
