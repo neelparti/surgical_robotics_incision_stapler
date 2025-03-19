@@ -20,10 +20,11 @@ def calculate_depth(pixel_width, real_width, focal_length):
 
 def main():
     frame_width, frame_height = 320, 240
-    focal_length = 615  # Assumed focal length for depth calculation
+    FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
+    WEBCAM_INDEX = 0 
 
     # On Windows, use the default webcam (usually index 0)
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(WEBCAM_INDEX)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
@@ -44,7 +45,7 @@ def main():
                 marker_id = ids[i][0]
                 top_left, top_right = corner[0][0], corner[0][1]
                 pixel_width = np.linalg.norm(top_right - top_left)
-                depth = calculate_depth(pixel_width, REAL_WIDTH, focal_length)
+                depth = calculate_depth(pixel_width, REAL_WIDTH, FOCAL_LENGTH)
                 depth = depth / 2
                 if depth:
                     print(f"Marker {marker_id} detected - Depth: {depth:.2f} cm")
