@@ -18,10 +18,9 @@ def calculate_depth(pixel_width, real_width, focal_length):
         return (focal_length * real_width) / pixel_width
     return None
 
-def main():
+def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
     frame_width, frame_height = 320, 240
-    FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
-    WEBCAM_INDEX = 0 
+    
 
     # On Windows, use the default webcam (usually index 0)
     cap = cv2.VideoCapture(WEBCAM_INDEX)
@@ -56,6 +55,13 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+    return depth
+
+def main():
+    FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
+    WEBCAM_INDEX = 0 
+
+    get_range(FOCAL_LENGTH, WEBCAM_INDEX)
 
 if __name__ == "__main__":
     main()
