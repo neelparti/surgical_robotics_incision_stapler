@@ -21,15 +21,18 @@ def calculate_depth(pixel_width, real_width, focal_length):
 def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
     frame_width, frame_height = 320, 240
     
-
-    # On Windows, use the default webcam (usually index 0)
     cap = cv2.VideoCapture(WEBCAM_INDEX)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
     if not cap.isOpened():
         print("Error: Could not open the webcam.")
-        return
+        return None, None
+
+    detected_depth = None
+    detected_frame = None
+
+    print("Press 's' to capture depth and frame, or 'q' to quit.")
 
     while True:
         ret, frame = cap.read()
@@ -42,23 +45,33 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
         if ids is not None:
             for i, corner in enumerate(corners):
                 marker_id = ids[i][0]
-                top_left, top_right = corner[0][0], corner[0][1]
-                pixel_width = np.linalg.norm(top_right - top_left)
-                depth = calculate_depth(pixel_width, REAL_WIDTH, FOCAL_LENGTH)
-                depth = depth / 2
-                if depth:
-                    # print(f"Marker {marker_id} detected - Depth: {depth:.2f} cm")
-                    cap.release()
-                    cv2.destroyAllWindows()
+                
+                # Compute marker width in pixels
+                top_left, top_right, bottom_right, bottom_left = corner[0]
+                width = np.linalg.norm(top_right - top_left)
+                height = np.linalg.norm(bottom_right - bottom_left)
+                pixel_width = (width + height) / 2  # Take average
+                
+                detected_depth = calculate_depth(pixel_width, REAL_WIDTH, FOCAL_LENGTH)
+                detected_depth /= 2  # Adjust depth as needed
+                detected_frame = frame.copy()
 
-                    return depth, frame
+                print(f"Marker {marker_id} detected - Depth: {detected_depth:.2f} cm")
+                cv2.putText(frame_with_markers, f"Depth: {detected_depth:.2f} cm", 
+                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
         cv2.imshow("ArUco Detection", frame_with_markers)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == ord('s') and detected_depth is not None:  # Capture depth and return on 's' press
+            break
+        elif key == ord('q'):  # Quit on 'q' press
+            detected_depth, detected_frame = None, None
             break
 
     cap.release()
     cv2.destroyAllWindows()
+    return detected_depth, detected_frame  # Returns on 's' press
     
 
 def main():
