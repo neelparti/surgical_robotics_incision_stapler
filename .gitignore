@@ -1,2 +1,3 @@
 /venv*
 /incesion_detection/calib_images/
+/incesion_detection/__pycache__
