@@ -30,8 +30,6 @@ def calculate_depth(pixel_width, real_width, focal_length):
     return None
 
 def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
-    
-    
     cap = cv2.VideoCapture(WEBCAM_INDEX)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
@@ -66,7 +64,7 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
                 # Calculate center coordinates in pixels
                 center_x = int((detected_top_left[0] + detected_bottom_right[0]) / 2)
                 center_y = int((detected_top_left[1] + detected_bottom_right[1]) / 2)
-                center_coords = (center_x, center_y)
+                aruco_center_coords = (center_x, center_y)
                 
                 detected_depth = calculate_depth(pixel_width, REAL_WIDTH_CM, FOCAL_LENGTH)
                 detected_depth /= 2  # Adjust depth if needed
@@ -87,43 +85,13 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
 
     cap.release()
     cv2.destroyAllWindows()
-    return detected_depth, detected_frame, pixel_width, center_coords # Returns on 's' press
-    
-def pixels_to_cm(pixel_width, real_width_cm, FOCAL_LENGTH):
-    """
-    Converts a pixel measurement to centimeters using the focal length.
-    """
-    if pixel_width <= 0:
-        return None  # Avoid division by zero
-    return (pixel_width * real_width_cm) / FOCAL_LENGTH
-
-def calculate_distance_robot_to_point(pixel_point, FOCAL_LENGTH, reference_pixel_width):
-    """
-    Calculates the real-world distance (in cm) between two points in pixel coordinates.
-    
-    Args:
-        pixel_point (tuple): (x, y) coordinates of the destination point in pixels.
-        real_width_cm (float): Known real-world width of the ArUco marker.
-        FOCAL_LENGTH (float): Camera focal length in pixels.
-        reference_pixel_width (float): Width of the ArUco marker in pixels.
-
-    Returns:
-        float: The real-world distance between the two points in cm.
-    """
-    # Convert pixel distances to real-world cm
-    scale_factor = pixels_to_cm(1, REAL_WIDTH_CM, FOCAL_LENGTH) / reference_pixel_width  # Convert pixels to cm
-    real_x1, real_y1 = ROBOT_CENTER[0] * scale_factor, ROBOT_CENTER[1] * scale_factor
-    real_x2, real_y2 = pixel_point[0] * scale_factor, pixel_point[1] * scale_factor
-
-    # Compute Euclidean distance in cm
-    real_distance_cm = np.sqrt((real_x2 - real_x1) ** 2 + (real_y2 - real_y1) ** 2)
-    return real_distance_cm
+    return detected_depth, detected_frame, pixel_width, aruco_center_coords # Returns on 's' press
 
 def main():
     FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
     WEBCAM_INDEX = 0 
 
-    depth, frame, top_left, top_right, bottom_left, bottom_right = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
+    depth, frame, pixel_width, aruco_center_coords = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
     cv2.imshow("Aruco tag", frame)
     print("Aruco tag depth: " + str(depth))
     cv2.waitKey(0)
