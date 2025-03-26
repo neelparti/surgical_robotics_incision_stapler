@@ -17,6 +17,10 @@ def main():
     FOCAL_LENGTH = 615  # focal length for depth calculation
     WEBCAM_INDEX = 0 
 
+    euclidean_dist = []
+    x = [] 
+    y = []
+
     aruco_windows.copy_params(REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, FOCAL_LENGTH, WEBCAM_INDEX)
     pixel_translation.copy_params(REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, FOCAL_LENGTH, WEBCAM_INDEX)
 
@@ -31,9 +35,8 @@ def main():
     path = path[0]      # hacky hack
     print(path)     # debugging 
     for point in path:
-        dist = pixel_translation.calculate_distance_robot_to_point(point, aruco_pixel_width)
-        print(dist)
-    #print("Dist from camera center to point " + str(pixel_translation.calculate_distance_robot_to_point(sample_destination_point, aruco_pixel_width)))
-
+        euclidean_dist.append, x.append, y.append = pixel_translation.calculate_distance_robot_to_point(point, aruco_pixel_width)
+        # here send x,y to robot, once robot reaches, loop again
+        
 if __name__ == "__main__":
     main()

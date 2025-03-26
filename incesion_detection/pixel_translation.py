@@ -39,5 +39,10 @@ def calculate_distance_robot_to_point(pixel_point, aruco_pixel_width):
         (real_pixel_point[0]  - real_robot_center[0]) ** 2 +
         (real_pixel_point[1]  - real_robot_center[1]) ** 2
     )
-    return real_distance_cm
+
+    # 4) Distance in x and y cm
+    dx_cm = real_pixel_point[0] - real_robot_center[0]
+    dy_cm = real_pixel_point[1] - real_robot_center[1]
+
+    return real_distance_cm, dx_cm, dy_cm
 
