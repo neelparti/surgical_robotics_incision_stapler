@@ -1,10 +1,20 @@
 import cv2
 import numpy as np
 
-REAL_WIDTH_CM = 2.0  # Real-world width of the ArUco marker (in cm)
-FRAME_WIDTH = 320
-FRAME_HEIGHT = 240
-ROBOT_CENTER = (FRAME_WIDTH / 2, FRAME_HEIGHT / 2)
+def copy_params(real_width_cm = 2.0, frame_width = 320, frame_height = 240, focal_length = 615, webcam_index = 0):
+    global REAL_WIDTH_CM
+    global FRAME_WIDTH
+    global FRAME_HEIGHT
+    global ROBOT_CENTER
+    global FOCAL_LENGTH
+    global WEBCAM_INDEX
+
+    REAL_WIDTH_CM = real_width_cm
+    FRAME_WIDTH = frame_width
+    FRAME_HEIGHT = frame_height
+    ROBOT_CENTER = (FRAME_WIDTH / 2, FRAME_HEIGHT / 2)
+    FOCAL_LENGTH = focal_length
+    WEBCAM_INDEX = webcam_index
 
 def detect_aruco_marker(frame, aruco_dict_type=cv2.aruco.DICT_4X4_50):
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
@@ -88,9 +98,7 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
     return detected_depth, detected_frame, pixel_width, aruco_center_coords # Returns on 's' press
 
 def main():
-    FOCAL_LENGTH = 615  # Assumed focal length for depth calculation
-    WEBCAM_INDEX = 0 
-
+    copy_params()       # nothing passed in so it uses default values here
     depth, frame, pixel_width, aruco_center_coords = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
     cv2.imshow("Aruco tag", frame)
     print("Aruco tag depth: " + str(depth))
