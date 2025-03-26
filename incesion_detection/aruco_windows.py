@@ -1,14 +1,19 @@
 import cv2
 import numpy as np
 
-def copy_params(real_width_cm = 2.0, frame_width = 320, frame_height = 240, focal_length = 615, webcam_index = 0):
-    global REAL_WIDTH_CM
-    global FRAME_WIDTH
-    global FRAME_HEIGHT
-    global ROBOT_CENTER
-    global FOCAL_LENGTH
-    global WEBCAM_INDEX
-
+def copy_params(real_width_cm=2.0, frame_width=320, frame_height=240, focal_length=615, webcam_index=0):
+    """
+    Sets global parameters for camera calibration and image dimensions.
+    
+    Global Variables:
+        REAL_WIDTH_CM: The known real-world width of the reference object (cm)
+        FRAME_WIDTH: The width of the camera frame in pixels
+        FRAME_HEIGHT: The height of the camera frame in pixels
+        ROBOT_CENTER: The (x, y) center of the frame
+        FOCAL_LENGTH: The camera's focal length in pixels
+        WEBCAM_INDEX: The webcam index used for capture
+    """
+    global REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, ROBOT_CENTER, FOCAL_LENGTH, WEBCAM_INDEX
     REAL_WIDTH_CM = real_width_cm
     FRAME_WIDTH = frame_width
     FRAME_HEIGHT = frame_height
