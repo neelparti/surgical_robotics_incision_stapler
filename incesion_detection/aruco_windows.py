@@ -98,7 +98,7 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
     return detected_depth, detected_frame, pixel_width, aruco_center_coords # Returns on 's' press
 
 def main():
-    copy_params()       # nothing passed in so it uses default values here
+    copy_params()       # sets parameters to default values
     depth, frame, pixel_width, aruco_center_coords = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
     cv2.imshow("Aruco tag", frame)
     print("Aruco tag depth: " + str(depth))
