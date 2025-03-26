@@ -3,9 +3,11 @@ import os
 import cv2
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'incesion_detection'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'robot_control'))
 
 import aruco_windows
 import pixel_translation
+import line_detection
 
 def main():
     REAL_WIDTH_CM = 2.0  # Real-world width of the ArUco marker (in cm)
@@ -25,8 +27,13 @@ def main():
     print("Aruco tag depth: " + str(depth))
     cv2.waitKey(0)
 
-    print("Dist from camera center to point " + str(pixel_translation.calculate_distance_robot_to_point(sample_destination_point, aruco_pixel_width)))
-
+    path = line_detection.detect_line_dotted_2(frame,selected_lines=[0])
+    path = path[0]      # hacky hack
+    print(path)     # debugging 
+    for point in path:
+        dist = pixel_translation.calculate_distance_robot_to_point(point, aruco_pixel_width)
+        print(dist)
+    #print("Dist from camera center to point " + str(pixel_translation.calculate_distance_robot_to_point(sample_destination_point, aruco_pixel_width)))
 
 if __name__ == "__main__":
     main()

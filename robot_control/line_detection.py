@@ -203,9 +203,10 @@ import numpy as np
 
 
 
-def detect_line_dotted_2(selected_lines=None):
+def detect_line_dotted_2(frame, selected_lines=None):
    # Read the image
-    img = cv2.imread('captured_image.png')
+    #img = cv2.imread('captured_image.png')
+    img = frame
 
     # Convert the image to HSV color space
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -301,8 +302,8 @@ def detect_line_dotted_2(selected_lines=None):
     return dot_coordinates
 
 # Run detection with a specific line index
-coordinates = detect_line_dotted_2(selected_lines=[0])  # Example: Draw only the first detected line
-print("Dot Coordinates:", coordinates)
+#coordinates = detect_line_dotted_2(selected_lines=[0])  # Example: Draw only the first detected line
+#print("Dot Coordinates:", coordinates)
 
 
 
