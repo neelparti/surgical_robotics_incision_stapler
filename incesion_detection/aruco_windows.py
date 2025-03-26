@@ -34,12 +34,12 @@ def detect_aruco_marker(frame, aruco_dict_type=cv2.aruco.DICT_4X4_50):
     
     return ids, corners, frame_with_markers
 
-def calculate_depth(pixel_width, real_width, focal_length):
+def calculate_depth(pixel_width):
     if pixel_width > 0:
-        return (focal_length * real_width) / pixel_width
+        return (FOCAL_LENGTH * REAL_WIDTH_CM) / pixel_width
     return None
 
-def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
+def get_range():
     cap = cv2.VideoCapture(WEBCAM_INDEX)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
@@ -76,7 +76,7 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
                 center_y = int((detected_top_left[1] + detected_bottom_right[1]) / 2)
                 aruco_center_coords = (center_x, center_y)
                 
-                detected_depth = calculate_depth(pixel_width, REAL_WIDTH_CM, FOCAL_LENGTH)
+                detected_depth = calculate_depth(pixel_width)
                 detected_depth /= 2  # Adjust depth if needed
                 detected_frame = frame.copy()
 
@@ -99,7 +99,7 @@ def get_range(FOCAL_LENGTH, WEBCAM_INDEX):
 
 def main():
     copy_params()       # sets parameters to default values
-    depth, frame, pixel_width, aruco_center_coords = get_range(FOCAL_LENGTH, WEBCAM_INDEX)
+    depth, frame, pixel_width, aruco_center_coords = get_range()
     cv2.imshow("Aruco tag", frame)
     print("Aruco tag depth: " + str(depth))
     cv2.waitKey(0)
