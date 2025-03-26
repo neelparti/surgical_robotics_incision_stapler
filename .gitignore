@@ -1,3 +1,4 @@
 /venv*
 /incesion_detection/calib_images/
 /incesion_detection/__pycache__
+/robot_control/__pycache__
