@@ -18,6 +18,7 @@ def main():
     FOCAL_LENGTH = 615  # focal length for depth calculation
     WEBCAM_INDEX = 0 
 
+    #robot_control.robot.create_robot()
     robot_control.activate_robot()
 
     aruco_windows.copy_params(REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, FOCAL_LENGTH, WEBCAM_INDEX)
@@ -33,9 +34,11 @@ def main():
     path = line_detection.detect_line_dotted_2(frame,selected_lines=[0])
     path = path[0]      # hacky hack
     print(path)     # debugging 
+    robot_control.move_to_lin_trf(0, 0, depth)
     for point in path:
         euclidean_dist, x, y = pixel_translation.calculate_distance_robot_to_point(point, aruco_pixel_width)
         
+        #robot_control.move_to_lin(x,y,depth)
         # here send x,y to robot, once robot reaches, loop again
 
     robot_control.close_robot()
