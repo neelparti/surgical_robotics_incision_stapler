@@ -26,12 +26,12 @@ def copy_params(real_width_cm=2.0, frame_width=320, frame_height=240, focal_leng
     FOCAL_LENGTH = focal_length
     WEBCAM_INDEX = webcam_index
 
-def calculate_distance_robot_to_point(pixel_point, aruco_pixel_width):
+def calculate_distance_robot_to_point(current_point, pixel_point, aruco_pixel_width):
     # 1) Convert from pixel units to cm in the plane of the marker
     pixel_scale = REAL_WIDTH_CM / aruco_pixel_width
     
     # 2) Convert the robot center and the target point from pixel to cm
-    real_robot_center = (ROBOT_CENTER[0] * pixel_scale, ROBOT_CENTER[1] * pixel_scale)
+    real_robot_center = (current_point[0] * pixel_scale, current_point[1] * pixel_scale)
     real_pixel_point  = (pixel_point[0]  * pixel_scale, pixel_point[1]  * pixel_scale)
     
     # 3) Compute Euclidean distance in cm
@@ -44,5 +44,5 @@ def calculate_distance_robot_to_point(pixel_point, aruco_pixel_width):
     dx_cm = real_pixel_point[0] - real_robot_center[0]
     dy_cm = real_pixel_point[1] - real_robot_center[1]
 
-    return real_distance_cm, dx_cm, dy_cm
+    return real_distance_cm*10, dx_cm*10, dy_cm*10         # *10 to convert to mm
 

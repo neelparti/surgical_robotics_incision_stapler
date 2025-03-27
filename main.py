@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'robot_control'))
 import aruco_windows
 import pixel_translation
 import line_detection
-import robot_control
+#import robot_control
 
 def main():
     REAL_WIDTH_CM = 2.0  # Real-world width of the ArUco marker (in cm)
@@ -18,8 +18,12 @@ def main():
     FOCAL_LENGTH = 615  # focal length for depth calculation
     WEBCAM_INDEX = 0 
 
+<<<<<<< HEAD
     #robot_control.robot.create_robot()
     robot_control.activate_robot()
+=======
+    #robot_control.activate_robot()
+>>>>>>> a196f03a3800762c0cc793820b14ea91e89a9cf2
 
     aruco_windows.copy_params(REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, FOCAL_LENGTH, WEBCAM_INDEX)
     pixel_translation.copy_params(REAL_WIDTH_CM, FRAME_WIDTH, FRAME_HEIGHT, FOCAL_LENGTH, WEBCAM_INDEX)
@@ -34,6 +38,7 @@ def main():
     path = line_detection.detect_line_dotted_2(frame,selected_lines=[0])
     path = path[0]      # hacky hack
     print(path)     # debugging 
+<<<<<<< HEAD
     robot_control.move_to_lin_trf(0, 0, depth)
     for point in path:
         euclidean_dist, x, y = pixel_translation.calculate_distance_robot_to_point(point, aruco_pixel_width)
@@ -42,6 +47,18 @@ def main():
         # here send x,y to robot, once robot reaches, loop again
 
     robot_control.close_robot()
+=======
+    # go to the first point in the path list realive to TRF  
+    current_point = path[0]
+    for dest_point in path:
+        #x,y is the delta between current position and destination position
+        euclidean_dist, x, y = pixel_translation.calculate_distance_robot_to_point(current_point, dest_point, aruco_pixel_width)
+        
+        # move realative to current TRF and pass in x, y
+        
+    # here send x,y to robot, once robot reaches, loop again
+    #robot_control.close_robot()
+>>>>>>> a196f03a3800762c0cc793820b14ea91e89a9cf2
         
 if __name__ == "__main__":
     main()
