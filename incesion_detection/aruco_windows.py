@@ -55,6 +55,8 @@ def get_range():
 
     detected_depth = None
     detected_frame = None
+    pixel_width = None           
+    aruco_center_coords = None
 
     print("Press 's' to capture depth and frame, or 'q' to quit.")
 
