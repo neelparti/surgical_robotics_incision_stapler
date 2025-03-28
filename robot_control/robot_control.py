@@ -28,6 +28,7 @@ def move_to_pose(x,y,z):
   
 def move_to_lin_trf(x,y,z):
     robot.MoveLinRelTRF(x, y, z, 0, 0, 0)
+    print(f"{x}, {y}, {z}")
 
 
 def move_to_defined():

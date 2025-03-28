@@ -9,6 +9,7 @@ import aruco_windows
 import pixel_translation
 import line_detection
 import robot_control
+import time
 
 def main():
     REAL_WIDTH_CM = 2.0  # Real-world width of the ArUco marker (in cm)
@@ -37,13 +38,31 @@ def main():
     current_point = path[0]
     #robot_control.move_to_lin_trf(0,0,(depth*10)-35)
     robot_control.move_to_defined()
+    #robot_control.move_to_lin_trf(12.385955,0, 0.0)
+    #robot_control.move_to_lin_trf(24.77,0, 0.0)
+    #robot_control.move_to_lin_trf(37.15,0, 0.0)
+    #robot_control.move_to_lin_trf(49.54,0, 0.0)
+    #robot_control.move_to_lin_trf(61.92,0, 0.0)
+    #robot_control.move_to_lin_trf(74.315,0, 0.0)
+    #robot_control.move_to_lin_trf(86.7,0, 0.0)
+    current_point = (0, 0)
+    prev_x = 0
+    prev_y = 0
     for dest_point in path:
         #x,y is the delta between current position and destination position
-        euclidean_dist, x, y = pixel_translation.calculate_distance_robot_to_point(current_point, dest_point, aruco_pixel_width)
-        print(x,y)
+      
+        euclidean_dist, curr_x, curr_y = pixel_translation.calculate_distance_robot_to_point(current_point, dest_point, aruco_pixel_width)
+        delta_x = curr_x - prev_x
+        delta_y =  curr_y - prev_y
+        prev_x = curr_x
+        prev_y =  curr_y
+
+        print(delta_x,delta_y)
+        
         #robot_control.move_to_lin_trf(0,0,-15)
-        robot_control.move_to_lin_trf(x,y,0)
+        robot_control.move_to_lin_trf(delta_x,0,0)
         #robot_control.move_to_lin_trf(0,0,15)
+        time.sleep(1)
 
 
 
